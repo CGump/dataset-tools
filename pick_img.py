@@ -3,6 +3,7 @@ import os
 import shutil
 
 import numpy as np
+import xml.etree.ElementTree as ET
 from skimage import io, transform
 
 import cv2
@@ -15,6 +16,7 @@ class BatchPcik():
     '''
     def __init__(self):
         self.imgdir_path = "F:/Fruit_dataset/fresh_fish/"
+        self.xml_path = "test/"
         self.error_path = "F:/Fruit_dataset/error_img/"
         self.classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
                         "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
@@ -88,6 +90,24 @@ class BatchPcik():
                     continue
         print ('total %d to rename & converted %d jpgs' % (len(filelist), i_num-1))
 
+    def change_xml_all(self, suffix='.jpg'):
+        '''
+        修改xml中的filename中的batch
+        升级逻辑思路：图片改->xml改->xml内容改，同步进行
+        这样修改前的名字，修改后的名字，修改后图片的地址都可以通过图片索引拿到
+        '''
+        filelist = os.listdir(self.xml_path)
+        for xmlfile in filelist:
+            doc = ET.parse(self.xml_path + xmlfile)
+            root = doc.getroot()
+            alter1 = root.find('filename')
+            alter1.text = xmlfile.split('.')[0] + suffix
+
+            alter2 = root.find('path')
+            alter2.text = alter2.text.rsplit('\\', 1)[0] + '\\' + xmlfile.split('.')[0] + suffix
+            doc.write(self.xml_path + xmlfile)
+            print("---done---")
+
     def read_image(self):
 
         w = 100
@@ -116,19 +136,21 @@ class BatchPcik():
 if __name__ == "__main__":
     demo = BatchPcik()
     demo.error_path = "F:/Fruit_dataset/pick_img/error_img/"
-    key = 1
+    key = 3
     if key == 1 :
         # 测试修改批次号方法
-        classes = ["apple", "kiwi", "mango"]
+        demo.imgdir_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
+        classes = ["apple"]
         batch = "04"
-        demo.imgdir_path = "test/"
-        demo.rename_batch(classes, batch) 
+        demo.rename_batch(classes, batch, suffix='.xml') 
     elif key == 2:
         classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
         "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
         "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
         "pineapple","pitaya","pomegranate","rambutan","strawberry","watermelon","waxberry"]
-
+    elif key == 3:
+        demo.xml_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
+        demo.change_xml_all()
 
     elif key == 10:
         classes.append('mix')
