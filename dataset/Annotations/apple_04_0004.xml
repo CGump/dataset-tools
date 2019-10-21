@@ -1,7 +1,7 @@
 <annotation>
 	<folder>JPEGImages</folder>
-	<filename>apple_01_0004.jpg</filename>
-	<path>E:\fruit_server\demo\VOCdevkit\VOC2007\JPEGImages\apple_01_0004.jpg</path>
+	<filename>apple_04_0004.jpg</filename>
+	<path>dataset/JPEGImages/apple_04_0004.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>

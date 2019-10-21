@@ -1,7 +1,7 @@
 <annotation>
 	<folder>JPEGImages</folder>
-	<filename>apple_01_0002.jpg</filename>
-	<path>E:\fruit_server\demo\VOCdevkit\VOC2007\JPEGImages\apple_01_0002.jpg</path>
+	<filename>apple_04_0003.jpg</filename>
+	<path>dataset/JPEGImages/apple_04_0003.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>612</xmin>
-			<ymin>353</ymin>
-			<xmax>1299</xmax>
-			<ymax>1011</ymax>
+			<xmin>26</xmin>
+			<ymin>286</ymin>
+			<xmax>591</xmax>
+			<ymax>883</ymax>
 		</bndbox>
 	</object>
 </annotation>

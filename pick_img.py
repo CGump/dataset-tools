@@ -118,20 +118,30 @@ class BatchPcik():
         filelist = os.listdir(self.imgdir_path)  # 获取文件路径 
         for filename in filelist:
             # filename已知 filename="apple_01_0001.jpg"
-            pic_name, _, pic_num = filename.split('_') # apple  01  0001.jpg
+            pic_1, _, pic_3 = filename.split('_') # apple  01  0001.jpg
             seach_name = filename.split('.')[0] # 用来索引xml文件的apple_01_0001
-            new_pic_name = pic_name + '_' + batch + '_' + pic_num  # 新名字apple_04_0001.jpg
-            xml_name = seach_name + xml_suf
+            new_pic_name = pic_1 + '_' + batch + '_' + pic_3  # 新名字apple_04_0001.jpg
+            xml_name = seach_name + xml_suf  # xml_name = apple_01_0001.xml
             xml_1, _, xml_3 = xml_name.split('_')
             new_xml_name = xml_1 + '_' + batch + '_' + xml_3
 
-            if (pic_name in self.classes) and filename.endswith(suffix):
+            if (pic_1 in self.classes) and filename.endswith(suffix):
                 src = os.path.join(os.path.abspath(self.imgdir_path), filename)
                 dst = os.path.join(os.path.abspath(self.imgdir_path), new_pic_name)
                 src_xml = os.path.join(os.path.abspath(self.xml_path), xml_name)
                 dst_xml = os.path.join(os.path.abspath(self.xml_path), new_xml_name)
 
-                # 先修改xml内容
+                doc = ET.parse(self.xml_path + xml_name)
+                root = doc.getroot()
+                root.find("filename").text = new_pic_name
+                root.find("path").text = self.imgdir_path + new_pic_name
+                doc.write(self.xml_path + xml_name)
+
+            try:
+                os.rename(src, dst)
+                os.rename(src_xml, dst_xml)
+            except:
+                continue
 
     def change_xml_all(self, suffix='.jpg'):
         '''
@@ -175,7 +185,7 @@ if __name__ == "__main__":
         demo.imgdir_path = "dataset/JPEGImages/"
         demo.xml_path = "dataset/Annotations/"
         demo.classes = ["apple"]
-
+        demo.rename_dataset("04")
 
 
     elif key == 10:
