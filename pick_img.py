@@ -41,6 +41,12 @@ class BatchPcik():
         return True
 
     def rename (self, pic_name, batch, i_num):
+        '''
+        待修改
+        功能：不同文件夹内图像批量重命名，要求文件夹命名格式一致
+        或者文件夹内重命名，单独某一类
+        以上两者需要可以同时实现，分类选择
+        '''
         filelist = os.listdir(self.imgdir_path) #获取文件路径 
         total_num = len(filelist) #获取文件长度（个数） 
         i = i_num #表示文件的命名是从1开始的 
