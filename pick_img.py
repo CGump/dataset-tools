@@ -16,7 +16,11 @@ class BatchPcik():
     def __init__(self):
         self.imgdir_path = "F:/Fruit_dataset/fresh_fish/"
         self.error_path = "F:/Fruit_dataset/error_img/"
-    
+        self.classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
+                        "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
+                        "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
+                        "pineapple","pitaya","pomegranate","rambutan","strawberry","watermelon","waxberry","mix"]
+
     def find_wrong_pic(self):
         '''
         记录并移动错误图片
@@ -41,7 +45,7 @@ class BatchPcik():
         total_num = len(filelist) #获取文件长度（个数） 
         i = i_num #表示文件的命名是从1开始的 
         for item in filelist:
-            if (class_name in item) and item.endswith('.jpg'): #初始的图片的格式为jpg格式的（或者源文件是png格式及其他格式，后面的转换格式就可以调整为自己需要的格式即可）
+            if item.endswith('.jpg'): #初始的图片的格式为jpg格式的（或者源文件是png格式及其他格式，后面的转换格式就可以调整为自己需要的格式即可）
                 src = os.path.join(os.path.abspath(self.imgdir_path), item) 
                 #dst = os.path.join(os.path.abspath(self.imgdir_path), ''+ '00' str(i) + pic_name + '.jpg') #处理后的格式也为jpg格式的，当然这里可以改成png格式 
                 dst = os.path.join(os.path.abspath(self.imgdir_path), pic_name + '_' + batch + '_' + format(str(i), '0>4s') + '.jpg')    #这种情况下的命名格式为0000000.jpg形式，可以自主定义想要的格式 
@@ -52,6 +56,31 @@ class BatchPcik():
                 except: 
                     continue
         print ('total %d to rename & converted %d jpgs' % (total_num, i))
+
+
+    def rename_batch (self, pic_list, batch, suffix='.jpg', i_num=1):
+        '''
+        数据集名称中标签项修改，例如：   
+        apple_01_0001.jpg -> apple_04_0001.jpg   
+        apple_01_0001.xml -> apple_04_0001.xml   
+        pic_list: `list`，需要修改批次号的数据集种类名称列表   
+        batch: 修改后的批次名称   
+        suffix: 文件的后缀名   
+        i_num: 文件的序号   
+        '''
+        filelist = os.listdir(self.imgdir_path)  # 获取文件路径 
+        for item in filelist:
+            pic_name, _, pic_num = item.split('_')  # 获取文件名，序号+后缀
+            if (pic_name in pic_list) and item.endswith(suffix): 
+                src = os.path.join(os.path.abspath(self.imgdir_path), item) 
+                dst = os.path.join(os.path.abspath(self.imgdir_path), pic_name + '_' + batch + '_' + pic_num)
+                try: 
+                    os.rename(src, dst) 
+                    print ('converting %s to %s ...' % (src, dst)) 
+                    i_num = i_num + 1
+                except: 
+                    continue
+        print ('total %d to rename & converted %d jpgs' % (len(filelist), i_num-1))
 
     def read_image(self):
 
@@ -81,22 +110,21 @@ class BatchPcik():
 if __name__ == "__main__":
     demo = BatchPcik()
     demo.error_path = "F:/Fruit_dataset/pick_img/error_img/"
-    '''
-    classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
-            "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
-            "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
-            "pineapple","pitaya","pomegranate","rambutan","strawberry","watermelon","waxberry"]
-    '''
-    classes = []
     key = 1
     if key == 1 :
-        class_name = "mangosteen_" #数据集标签
-        batch = "04" #数据集制作批次
-        i_num = 1 #表示文件的命名是从1开始的
-        demo.imgdir_path = "VOC2007/JPEGImages/"
-        #demo.find_wrong_pic()
-        demo.rename(class_name, batch, i_num) 
+        # 测试修改批次号方法
+        classes = ["apple", "kiwi", "mango"]
+        batch = "04"
+        demo.imgdir_path = "test/"
+        demo.rename_batch(classes, batch) 
     elif key == 2:
+        classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
+        "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
+        "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
+        "pineapple","pitaya","pomegranate","rambutan","strawberry","watermelon","waxberry"]
+
+
+    elif key == 10:
         classes.append('mix')
         for class_name in classes:
             dirpath = "F:/Fruit_dataset/yolo_39class/test_image/%s"%(class_name)
