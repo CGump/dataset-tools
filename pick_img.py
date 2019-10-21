@@ -23,6 +23,31 @@ class BatchPcik():
                         "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
                         "pineapple","pitaya","pomegranate","rambutan","strawberry","watermelon","waxberry","mix"]
 
+    def read_image(self):
+
+        w = 100
+        h = 100
+        c = 3
+        path = self.imgdir_path
+        cate = [path + x for x in os.listdir(path) if os.path.isdir(path+x)]
+        images = []
+        labels = []
+        for index, folder in enumerate(cate):
+            for im in glob.glob(folder + '/*.jpg'):
+                img = io.imread(im)
+                try:
+                    if img.shape[2] == c:
+                        img = transform.resize(img, (w, h))
+                        images.append(img)
+                        labels.append(index)
+                        print(im)
+                    else:
+                        print(im, ' IS WRONG')
+                except:
+                    continue
+            print('label %d is:' % index, folder)
+        return np.asarray(images, np.float32), np.asarray(labels, np.int32)
+
     def find_wrong_pic(self):
         '''
         记录并移动错误图片
@@ -65,7 +90,6 @@ class BatchPcik():
                     continue
         print ('total %d to rename & converted %d jpgs' % (total_num, i))
 
-
     def rename_batch (self, pic_list, batch, suffix='.jpg', i_num=1):
         '''
         数据集名称中标签项修改，例如：   
@@ -90,6 +114,25 @@ class BatchPcik():
                     continue
         print ('total %d to rename & converted %d jpgs' % (len(filelist), i_num-1))
 
+    def rename_dataset(self, batch, suffix='.jpg', xml_suf='.xml'):
+        filelist = os.listdir(self.imgdir_path)  # 获取文件路径 
+        for filename in filelist:
+            # filename已知 filename="apple_01_0001.jpg"
+            pic_name, _, pic_num = filename.split('_') # apple  01  0001.jpg
+            seach_name = filename.split('.')[0] # 用来索引xml文件的apple_01_0001
+            new_pic_name = pic_name + '_' + batch + '_' + pic_num  # 新名字apple_04_0001.jpg
+            xml_name = seach_name + xml_suf
+            xml_1, _, xml_3 = xml_name.split('_')
+            new_xml_name = xml_1 + '_' + batch + '_' + xml_3
+
+            if (pic_name in self.classes) and filename.endswith(suffix):
+                src = os.path.join(os.path.abspath(self.imgdir_path), filename)
+                dst = os.path.join(os.path.abspath(self.imgdir_path), new_pic_name)
+                src_xml = os.path.join(os.path.abspath(self.xml_path), xml_name)
+                dst_xml = os.path.join(os.path.abspath(self.xml_path), new_xml_name)
+
+                # 先修改xml内容
+
     def change_xml_all(self, suffix='.jpg'):
         '''
         修改xml中的filename中的batch
@@ -108,35 +151,11 @@ class BatchPcik():
             doc.write(self.xml_path + xmlfile)
             print("---done---")
 
-    def read_image(self):
-
-        w = 100
-        h = 100
-        c = 3
-        path = self.imgdir_path
-        cate = [path + x for x in os.listdir(path) if os.path.isdir(path+x)]
-        images = []
-        labels = []
-        for index, folder in enumerate(cate):
-            for im in glob.glob(folder + '/*.jpg'):
-                img = io.imread(im)
-                try:
-                    if img.shape[2] == c:
-                        img = transform.resize(img, (w, h))
-                        images.append(img)
-                        labels.append(index)
-                        print(im)
-                    else:
-                        print(im, ' IS WRONG')
-                except:
-                    continue
-            print('label %d is:' % index, folder)
-        return np.asarray(images, np.float32), np.asarray(labels, np.int32)
 
 if __name__ == "__main__":
     demo = BatchPcik()
     demo.error_path = "F:/Fruit_dataset/pick_img/error_img/"
-    key = 3
+    key = 4
     if key == 1 :
         # 测试修改批次号方法
         demo.imgdir_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
@@ -151,6 +170,13 @@ if __name__ == "__main__":
     elif key == 3:
         demo.xml_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
         demo.change_xml_all()
+    elif key == 4:
+        # 同时修改图片名，标注名和标注信息内的图片名、图片地址
+        demo.imgdir_path = "dataset/JPEGImages/"
+        demo.xml_path = "dataset/Annotations/"
+        demo.classes = ["apple"]
+
+
 
     elif key == 10:
         classes.append('mix')
