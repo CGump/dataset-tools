@@ -1,10 +1,10 @@
 import glob
-import os
-import shutil
+import os, shutil
 
 import numpy as np
 import xml.etree.ElementTree as ET
 from skimage import io, transform
+from PIL import Image
 
 import cv2
 
@@ -17,7 +17,7 @@ class BatchPcik():
     def __init__(self):
         self.imgdir_path = "F:/Fruit_dataset/fresh_fish/"
         self.xml_path = "test/"
-        self.error_path = "F:/Fruit_dataset/error_img/"
+        self.error_path = "test/error/"
         self.classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
                         "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
                         "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
@@ -48,23 +48,29 @@ class BatchPcik():
             print('label %d is:' % index, folder)
         return np.asarray(images, np.float32), np.asarray(labels, np.int32)
 
-    def find_wrong_pic(self):
+    def find_wrong_pic(self, save_change="c"):
         '''
-        记录并移动错误图片
+        处理非3通道、非RGB图片
+        save_change: 为`"c"`时change模式，将非3通道、非RGB图片转换为3通道RGB图片
+                     为`"r"`时remove模式，删除不符合的图片
+                     为`"m"`时move模式，移动图片至指定文件夹
         '''
-        dir_list = os.listdir(self.imgdir_path)
-        for _, name in enumerate(dir_list):  
-            img = io.imread(self.imgdir_path + name)
-            img_size = img.shape # 图片的尺寸
-            img_path = self.imgdir_path + name # 图片的名
-            img_len = len(img_size) # 求取图片维度
-            if img_len != 3:
-                print('尺寸错误的图片是：', name, '具体尺寸为：', img_size, '维度是：', img_len)
-                shutil.move(img_path, self.error_path)
-            if img_size[2] != 3:
-                print('非3通道图片：', name , img_size)
-                new_img = cv2.imread(img_path)
-                cv2.imwrite(img_path, new_img)# 需要改进'''
+        filelist = os.listdir(self.imgdir_path)
+        if save_change == "c":
+            for filename in filelist: 
+                image_file = Image.open(self.imgdir_path + filename)
+                image_file.convert('RGB').save(self.imgdir_path + filename)
+        elif save_change == "r":
+            for filename in filelist:
+                os.remove(self.imgdir_path + filename)
+        elif save_change == "m":
+            is_exists = os.path.exists(self.error_path)
+            os.makedirs(self.error_path) if not is_exists else print("目录已存在")
+            for filename in filelist:
+                shutil.move(self.imgdir_path + filename, self.error_path)
+        else:
+            print("the config \"save_change\" must choose in 'c' or 'r' or 'm'")
+        
         return True
 
     def rename (self, pic_name, batch, i_num):
@@ -170,11 +176,24 @@ class BatchPcik():
             doc.write(self.xml_path + xmlfile)
         print("---done---")
 
+    def get_train_name(self, write_path, suffix='.jpg'):
+        '''
+        读取数据集中所有图像的名称，并写入文本文件
+        write_path：文本文件的存放路径
+        '''
+        filelist = os.listdir(self.imgdir_path)
+        filelist.sort()  # 原地修改
+        f = open(write_path, 'w')
+        for filename in filelist:
+            if filename.endswith(suffix):
+                write_name = filename.split('.')[0] + '\n'
+                f.write(write_name)
+        f.close()
 
 if __name__ == "__main__":
     demo = BatchPcik()
-    demo.error_path = "F:/Fruit_dataset/pick_img/error_img/"
-    key = 4
+    #demo.error_path = "F:/Fruit_dataset/pick_img/error_img/"
+    key = 6
     if key == 1 :
         # 测试修改批次号方法
         demo.imgdir_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
@@ -195,7 +214,14 @@ if __name__ == "__main__":
         demo.xml_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
         demo.classes = ["apple","kiwi","mango","mangosteen","mix","orange","pear","peach","pomegranate"]
         demo.rename_dataset("04")
-
+    elif key == 5:
+        demo.imgdir_path = "VOC2007/JPEGImages/"
+        write_path = "VOC2007/ImageSets/Main/train.txt"
+        demo.get_train_name(write_path)
+        
+    elif key == 6:
+        demo.imgdir_path = "test/error_img/"
+        demo.find_wrong_pic(save_change='m')
 
     elif key == 10:
         classes.append('mix')
