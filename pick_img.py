@@ -118,3 +118,7 @@ if __name__ == "__main__":
         data, label = demo.read_image()
         print(data.shape) 
     '''
+
+    '''
+    test
+    '''
