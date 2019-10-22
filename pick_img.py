@@ -90,22 +90,21 @@ class BatchPcik():
                     continue
         print ('total %d to rename & converted %d jpgs' % (total_num, i))
 
-    def rename_batch (self, pic_list, batch, suffix='.jpg', i_num=1):
+    def rename_batch (self, batch, suffix='.jpg', i_num=1):
         '''
         数据集名称中标签项修改，例如：   
         apple_01_0001.jpg -> apple_04_0001.jpg   
         apple_01_0001.xml -> apple_04_0001.xml   
-        pic_list: `list`，需要修改批次号的数据集种类名称列表   
         batch: 修改后的批次名称   
         suffix: 文件的后缀名   
         i_num: 文件的序号   
         '''
         filelist = os.listdir(self.imgdir_path)  # 获取文件路径 
-        for item in filelist:
-            pic_name, _, pic_num = item.split('_')  # 获取文件名，序号+后缀
-            if (pic_name in pic_list) and item.endswith(suffix): 
-                src = os.path.join(os.path.abspath(self.imgdir_path), item) 
-                dst = os.path.join(os.path.abspath(self.imgdir_path), pic_name + '_' + batch + '_' + pic_num)
+        for filename in filelist:
+            pic_1, _, pic_3 = filename.split('_')  # 获取文件名，序号+后缀
+            if (pic_1 in self.classes) and filename.endswith(suffix): 
+                src = os.path.join(os.path.abspath(self.imgdir_path), filename) 
+                dst = os.path.join(os.path.abspath(self.imgdir_path), pic_1 + '_' + batch + '_' + pic_3)
                 try: 
                     os.rename(src, dst) 
                     print ('converting %s to %s ...' % (src, dst)) 
@@ -114,16 +113,24 @@ class BatchPcik():
                     continue
         print ('total %d to rename & converted %d jpgs' % (len(filelist), i_num-1))
 
-    def rename_dataset(self, batch, suffix='.jpg', xml_suf='.xml'):
+    def rename_dataset(self, batch, suffix='.jpg', xml_suffix='.xml'):
+        '''
+        修改数据集批次信息，包括图片名和xml标注文件名，以及标注文件内的图片名和图片路径
+        apple_01_0001.jpg -> apple_04_0001.jpg   
+        apple_01_0001.xml -> apple_04_0001.xml   
+        batch：`str`，修改后的批次号
+        suffix：图像的后缀名，默认为`.jpg`
+        xml_suffix：标注文件后缀名，默认为`.xml`
+        '''
         filelist = os.listdir(self.imgdir_path)  # 获取文件路径 
         for filename in filelist:
-            # filename已知 filename="apple_01_0001.jpg"
+            # filename已知 filename="apple_01_0001.jpg" 修改前
             pic_1, _, pic_3 = filename.split('_') # apple  01  0001.jpg
             seach_name = filename.split('.')[0] # 用来索引xml文件的apple_01_0001
             new_pic_name = pic_1 + '_' + batch + '_' + pic_3  # 新名字apple_04_0001.jpg
-            xml_name = seach_name + xml_suf  # xml_name = apple_01_0001.xml
-            xml_1, _, xml_3 = xml_name.split('_')
-            new_xml_name = xml_1 + '_' + batch + '_' + xml_3
+            xml_name = seach_name + xml_suffix  # xml_name 此时为修改前 apple_01_0001.xml
+            xml_1, _, xml_3 = xml_name.split('_') # 提取出来后：apple  01  0001.xml
+            new_xml_name = xml_1 + '_' + batch + '_' + xml_3  # 重新组合批次信息，apple_04
 
             if (pic_1 in self.classes) and filename.endswith(suffix):
                 src = os.path.join(os.path.abspath(self.imgdir_path), filename)
@@ -140,14 +147,16 @@ class BatchPcik():
             try:
                 os.rename(src, dst)
                 os.rename(src_xml, dst_xml)
+                print("---filename:%s has been modified---"%(filename))
             except:
                 continue
 
     def change_xml_all(self, suffix='.jpg'):
         '''
-        修改xml中的filename中的batch
-        升级逻辑思路：图片改->xml改->xml内容改，同步进行
-        这样修改前的名字，修改后的名字，修改后图片的地址都可以通过图片索引拿到
+        修改xml文件中的filename和path   
+        xml文件的文件名与其内部filename和path不对应   
+        通过xml文件名提取信息，拼装`.jpg`后缀即可
+        suffix：默认后缀为`.jpg`
         '''
         filelist = os.listdir(self.xml_path)
         for xmlfile in filelist:
@@ -159,7 +168,7 @@ class BatchPcik():
             alter2 = root.find('path')
             alter2.text = alter2.text.rsplit('\\', 1)[0] + '\\' + xmlfile.split('.')[0] + suffix
             doc.write(self.xml_path + xmlfile)
-            print("---done---")
+        print("---done---")
 
 
 if __name__ == "__main__":
@@ -169,9 +178,9 @@ if __name__ == "__main__":
     if key == 1 :
         # 测试修改批次号方法
         demo.imgdir_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
-        classes = ["apple"]
+        demo.classes = ["apple"]
         batch = "04"
-        demo.rename_batch(classes, batch, suffix='.xml') 
+        demo.rename_batch(batch, suffix='.xml') 
     elif key == 2:
         classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
         "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
@@ -182,9 +191,9 @@ if __name__ == "__main__":
         demo.change_xml_all()
     elif key == 4:
         # 同时修改图片名，标注名和标注信息内的图片名、图片地址
-        demo.imgdir_path = "dataset/JPEGImages/"
-        demo.xml_path = "dataset/Annotations/"
-        demo.classes = ["apple"]
+        demo.imgdir_path = "E:/fruit_server/VOCdevkit/VOC2007/JPEGImages/"
+        demo.xml_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
+        demo.classes = ["apple","kiwi","mango","mangosteen","mix","orange","pear","peach","pomegranate"]
         demo.rename_dataset("04")
 
 
