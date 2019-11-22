@@ -193,7 +193,7 @@ class BatchPcik():
 if __name__ == "__main__":
     demo = BatchPcik()
     #demo.error_path = "F:/Fruit_dataset/pick_img/error_img/"
-    key = 6
+    key = 2
     if key == 1 :
         # 测试修改批次号方法
         demo.imgdir_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
@@ -201,10 +201,12 @@ if __name__ == "__main__":
         batch = "04"
         demo.rename_batch(batch, suffix='.xml') 
     elif key == 2:
-        classes = ["apple","avocado","banana","beefsteak","blueberry","carambola","cherries","chicken","coconut","durian",
-        "fig","fish","grape","hamimelon","hawthorn","kiwano","kiwi","lemon","litchi","longan","loquat","mango",
-        "mangosteen","mulberry","muskmelon","orange","pawpaw","peach","pear","pemelo","pepinomelon","persimmon",
-        "pineapple","pitaya","pomegranate","rambutan","strawberry","watermelon","waxberry"]
+        demo.classes = ["apple", "avocado", "broccoli", "carrot", "chinese-cabbage", "coconut",
+                        "coconut", "corn", "hami-melon", "lemon", "mix" ,"onion", "orange",
+                        "pear", "pomegranate", "pomelo", "sweet-potato"]
+        for class_name in demo.classes:
+            demo.imgdir_path = 'E:/fruit_server/15class_05/15/%s'%(class_name) 
+            demo.rename(class_name, batch='05', i_num=1)
     elif key == 3:
         demo.xml_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
         demo.change_xml_all()
