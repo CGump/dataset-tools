@@ -201,11 +201,12 @@ if __name__ == "__main__":
         batch = "04"
         demo.rename_batch(batch, suffix='.xml') 
     elif key == 2:
-        demo.classes = ["apple", "avocado", "broccoli", "carrot", "chinese-cabbage", "coconut",
-                        "corn", "hami-melon", "lemon", "mix" ,"onion", "orange", "pear", 
-                        "pomegranate", "pomelo", "sweet-potato"]
+        #demo.classes = ["apple", "avocado", "broccoli", "carrot", "chinese-cabbage", "coconut",
+        #                "corn", "hami-melon", "lemon", "mix" ,"onion", "orange", "pear", 
+        #                "pomegranate", "pomelo", "sweet-potato"]
+        demo.classes = ["hami-melon"]
         for class_name in demo.classes:
-            demo.imgdir_path = 'E:/fruit_server/15class_05/15/%s'%(class_name) 
+            demo.imgdir_path = 'E:/fruit_server/15/%s'%(class_name) 
             demo.rename(class_name, batch='05', i_num=1)
     elif key == 3:
         demo.xml_path = "E:/fruit_server/VOCdevkit/VOC2007/Annotations/"
