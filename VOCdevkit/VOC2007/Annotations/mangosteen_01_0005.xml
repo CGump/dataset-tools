@@ -1,0 +1,26 @@
+<annotation>
+	<folder>JPEGImages</folder>
+	<filename>mangosteen_01_0005.jpg</filename>
+	<path>E:\fruit_server\demo\VOCdevkit\VOC2007\JPEGImages\mangosteen_01_0005.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1920</width>
+		<height>1080</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>mangosteen</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>687</xmin>
+			<ymin>487</ymin>
+			<xmax>1228</xmax>
+			<ymax>982</ymax>
+		</bndbox>
+	</object>
+</annotation>

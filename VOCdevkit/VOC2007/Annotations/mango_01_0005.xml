@@ -1,0 +1,26 @@
+<annotation>
+	<folder>JPEGImages</folder>
+	<filename>mango_01_0005.jpg</filename>
+	<path>E:\fruit_server\demo\VOCdevkit\VOC2007\JPEGImages\mango_01_0005.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1920</width>
+		<height>1080</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>mango</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>240</xmin>
+			<ymin>35</ymin>
+			<xmax>734</xmax>
+			<ymax>948</ymax>
+		</bndbox>
+	</object>
+</annotation>

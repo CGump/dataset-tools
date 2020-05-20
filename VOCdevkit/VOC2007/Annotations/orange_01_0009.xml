@@ -1,0 +1,26 @@
+<annotation>
+	<folder>JPEGImages</folder>
+	<filename>orange_01_0009.jpg</filename>
+	<path>E:\fruit_server\demo\VOCdevkit\VOC2007\JPEGImages\orange_01_0009.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1920</width>
+		<height>1080</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>orange</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>523</ymin>
+			<xmax>439</xmax>
+			<ymax>1018</ymax>
+		</bndbox>
+	</object>
+</annotation>
